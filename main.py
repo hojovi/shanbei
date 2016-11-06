@@ -175,8 +175,8 @@ def getCurrentTask():
 @login_required
 def updateTag():
     tagIds=request.form.getlist('tags')
-    print(type(tagIds))
-    print(tagIds)
+    # print(type(tagIds))
+    # print(tagIds)
     try:
         current_user.tags=[]
         session.commit()
@@ -187,7 +187,7 @@ def updateTag():
         session.commit()
         return success({})
     except Exception as e:
-        print(e)
+        # print(e)
         session.rollback()
         return error({'message':"抱歉出现错误，请发送详细内容到hantaouser@163.com"})
 
@@ -200,6 +200,8 @@ def updateTask():
             current_user.task=Task(wordNumPerDay=num)
         else:
             current_user.task.wordNumPerDay=num
+        for history in session.query(HistoryTask).filter(HistoryTask.taskTime>=date.today()).all():
+            history.plan=num
         session.commit()
         return success({})
     except:
