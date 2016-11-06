@@ -1,23 +1,31 @@
 {% extends "base.html" %}
 {% block title %}记单词{% endblock %}
 
+{% block style %}
+<style>
+	.top-buffer{
+		margin-top: 20px;
+	}
+</style>
+{% endblock %}
+
 {% block content %}
 <div id="outter" class="container">
-	<div class="row">
+	<div class="row top-buffer">
 		<div id="word" class="col-md-4 col-md-offset-4 text-center">
 			
 		</div>
 	</div>
-	<div id="showExplanationRow" class="row">
+	<div id="showExplanationRow" class="row top-buffer">
 		<div class="col-md-4 col-md-offset-4">
 			<button id="showExplanation" type="button" class="btn btn-lg center-block">查看</button>
 		</div>
 	</div>
-	<div id="explanationRow" class="row">
+	<div id="explanationRow" class="row top-buffer">
 		<div id="explanation" class="col-md-4 col-md-offset-4">
 		</div>
 	</div>
-	<div class="row">
+	<div class="row top-buffer">
 		<div class="col-md-2 col-md-offset-2">
 			<button id="remember" type="button" class="btn btn-lg center-block">记住了</button>
 		</div> 
@@ -25,12 +33,12 @@
 			<button id="forget" type="button" class="btn btn-lg center-block">没记住</button>
 		</div>
 	</div>
-	<div class="row">
+	<div class="row top-buffer">
 		<div class="col-md-4 col-md-offset-4">
 			<button id="showAddNote" type="button" class="btn btn-lg center-block">添加笔记</button>
 		</div>
 	</div>
-	<div id="noteRow" class="row" style="display: none;">
+	<div id="noteRow" class="row top-buffer" style="display: none;">
 		<div class="col-md-4 col-md-offset-4">
 			<textarea id="noteContent"></textarea>
 		</div>
@@ -38,13 +46,13 @@
 			<button id="addNote" type="button" class="btn btn-lg center-block">确定添加</button>
 		</div>
 	</div>
-	<div id="seeOtherRow" class="row">
+	<div id="seeOtherRow" class="row top-buffer">
 		<div class="col-md-4 col-md-offset-4">
 			<button id="seeOther" type="button" class="btn btn-lg center-block">查看所有用户的笔记</button>
 		</div>
 	</div>
-	<div id="notesRow" class="row">
-		<div id="notes" clas="col-md-6 col-md-offset-3">
+	<div id="notesRow" class="row top-buffer">
+		<div id="notes" class="col-md-6 col-md-offset-3">
 			
 		</div>
 	</div>
@@ -70,7 +78,7 @@
 			});
 			$("#remember").click(recite);
 			$("#forget").click(recite);
-			nextWord();
+			nextWord(true);
 		}
 		function nextWord(remember){
 			if(words.length==0){
@@ -86,7 +94,7 @@
 			$("#showExplanationRow").show();
 			$("#explanationRow").hide();
 			$("#word").text(curWord['word']);
-			$("#explanation").text(curWord['explanation']+"<br/>"+curWord['example']);
+			$("#explanation").html("<p>"+curWord['explanation']+"<br/>"+(curWord['example']==null?'':curWord['example'])+"</p>");
 		}
 		function recite(event){
 			var wordId=curWord['id'];
@@ -116,7 +124,7 @@
 			$.get("/get_notes",{wordId:curWord['id']},function(data){
 				if(data['result']=="success"){
 					for(var i=0;i<data['notes'].length;i++){
-						$("#notes").append("<p>"+data['notes'][i]+"</p>");
+						$("#notes").append("<hr><p>"+data['notes'][i]+"</p>");
 					}
 				}else{
 					alert(data['message']);

@@ -31,14 +31,15 @@ def getUserWordCount(user):
 
 #插入数据到progress表，用原生sql
 def extendProgress(user,len):
-    #sql语句基本就是这样，有6个参数要填，分别是：
+    #sql语句基本就是这样，有5个参数要填，分别是：
     #用户ID，初始progress，用户ID，用户ID，想要插入的数据条数
     sql='''
-        insert into progress(userId,wordId,progress)
-        (select %s,word.id,%s from tag left join word
+        insert into progress(wordId,userId,progress)
+        select distinct wordId as wordId,userId,progress from
+        (select %s as userId,word.id as wordId,%s as progress from tag left join word
         on exists(select * from word_tag where tagId=tag.id and wordId=word.id)
         where exists(select * from user_tag where userId=%s and tagId=tag.id) and not exists(select * from progress where userId=%s and wordId=word.id)
-        limit %s);
+        ) as tmp limit %s;
     '''%(user.id,0,user.id,user.id,len)
     # cursor=connection.cursor()
     # effected_row=cursor.execute(sql)

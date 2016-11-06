@@ -91,20 +91,19 @@ def todayWord():
         history=HistoryTask.query_one(taskTime=date.today())
     need=history.plan-history.complete
     count=session.query(Word).filter(Word.progresses.any(and_(Progress.progress<5,Progress.userId==current_user.id))).count()
-    # userWordCount=getUserWordCount(current_user)
     try:
         if count<need:
-            # quickExtendProgressCount=quickExtendProgress(current_user,1000)
-            # if quickExtendProgressCount+userWordCount<need:
-            #     slowExtendProgressCount=slowExtendProgress(current_user,1000)
             extendProgressCount=extendProgress(current_user, 1000)
-        progresses=getUserWord(current_user,need)
+        if count==0 and extendProgress.rowcount==0:
+            return error({'message':'您已背完所有单词！'})
+        progresses=session.query(Progress).filter(Progress.user==current_user,Progress.progress<5).order_by(Progress.progress).limit(need).all()
+        print(progresses)
         words=[progress.word.asDict() for progress in progresses]
         return success({'words':words})
     except Exception as e:
-        # print(e)
-        # import traceback
-        # traceback.print_exc()
+        print(e)
+        import traceback
+        traceback.print_exc()
         session.rollback()
         return error({'message':"抱歉出现错误，请发送详细内容到hantaouser@163.com"})
 
