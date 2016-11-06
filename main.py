@@ -56,7 +56,7 @@ def register():
     if current_user is None:
         return error({'message':'当前有用户登录！'})
     name=request.form['name']
-    password=register.form['password']
+    password=request.form['password']
     if name is None or password is None:
         return error(message='错误！'), 404
     user=User(name=name,password=password)
@@ -92,11 +92,12 @@ def jidanci():
 @main.route('/today_word',methods=['GET'])
 @login_required
 def todayWord():
-    if HistoryTask.query_count(taskTime=date.today())==0:
+    if session.query(HistoryTask).filter(HistoryTask.user==current_user,HistoryTask.taskTime==date.today()).count()==0:
         history=HistoryTask(userId=current_user.id,taskTime=date.today(),plan=current_user.task.wordNumPerDay,complete=0)
-        HistoryTask.insert(history)
+        session.add(history)
+        session.commit()
     else:
-        history=HistoryTask.query_one(taskTime=date.today())
+        history=session.query(HistoryTask).filter(HistoryTask.user==current_user,HistoryTask.taskTime==date.today()).first()
     need=history.plan-history.complete
     if need<0:
         return success({'words':[]})
@@ -104,7 +105,7 @@ def todayWord():
     try:
         if count<need:
             extendProgressCount=extendProgress(current_user, 1000)
-        if count==0 and extendProgress.rowcount==0:
+        if count==0 and extendProgressCount.rowcount==0:
             return error({'message':'您已背完所有单词！'})
         progresses=session.query(Progress).filter(Progress.user==current_user,Progress.progress<5).order_by(Progress.progress).limit(need).all()
         print(progresses)
