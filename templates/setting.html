@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}设置页面{% endblock %}
+
+{% block content %}
+	{% if current_user.is_authenticated %}
+	<div class="container">
+		<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<form id="tagSetting" role="form">
+				<div class="form-group">
+					{% for tag in tags %}
+						<p><input type="checkbox" name="tags" value="{{tag.id}}">{{tag.tag}}</p>
+					{% endfor %}
+				</div>
+				
+				<div class="form-group">
+					<button id="changeTag" type="button" class="btn btn-default">确认修改标签</button>
+				</div>
+			</form>
+		</div>
+		</div>
+		<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<form id="wordNumPerDaySetting" role="form">
+				<div class="form-group">
+					<label for="wordNumPerDay">每天的单词量</label>
+					<input id="wordNumPerDay" type="number" name="wordNumPerDay" value="{{wordNumPerDay}}" placeholder="您希望每天背多少单词？"/>
+				</div>
+				<div class="form-group">
+					<button id="changeWordNumPerDay" type="button" class="btn btn-default">确认修改日单词量</button>
+				</div>
+			</form>
+		</div>
+		</div>
+	</div>
+	{% endif %}
+{% endblock %}
+
+{% block script %}
+	{% if current_user.is_authenticated %}
+		<script>
+			$.get('/current_tag',function(data){
+				if(data['result']=="success"){
+					for(var i=0;i<data['tagIds'].length;i++){
+						$(":checkbox[value='"+data['tagIds'][i]+"']").attr('checked',true);
+					}
+				}else{
+					alert(data['message']);
+				}
+			});
+			$.get('/current_task',function(data){
+				if(data['result']=="success"){
+					$("#wordNumPerDay").val(data['wordNumPerDay']);
+				}else{
+					alert(data['message']);
+				}
+			});
+			$("#changeTag").click(function(){
+				$.post('/update_tag',$("#tagSetting").serialize(),function(data){
+					if(data['result']=="success"){
+						window.location.reload();
+					}else{
+						alert(data['message']);
+					}
+				});
+			});
+			$("#changeWordNumPerDay").click(function(){
+				$.post('/update_task',$("#wordNumPerDaySetting").serialize(),function(data){
+					if(data['result']=="success"){
+						window.location.reload();
+					}else{
+						alert(data['message']);
+					}
+				});
+			});
+		</script>
+	{% endif %}
+{% endblock %}

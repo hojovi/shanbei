@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block title %}记单词{% endblock %}
+
+{% block content %}
+<div id="outter" class="container">
+	<div class="row">
+		<div id="word" class="col-md-4 col-md-offset-4 text-center">
+			
+		</div>
+	</div>
+	<div id="showExplanationRow" class="row">
+		<div class="col-md-4 col-md-offset-4">
+			<button id="showExplanation" type="button" class="btn btn-lg center-block">查看</button>
+		</div>
+	</div>
+	<div id="explanationRow" class="row">
+		<div id="explanation" class="col-md-4 col-md-offset-4">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-2 col-md-offset-2">
+			<button id="remember" type="button" class="btn btn-lg center-block">记住了</button>
+		</div> 
+		<div class="col-md-2 col-md-offset-4">
+			<button id="forget" type="button" class="btn btn-lg center-block">没记住</button>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-4 col-md-offset-4">
+			<button id="showAddNote" type="button" class="btn btn-lg center-block">添加笔记</button>
+		</div>
+	</div>
+	<div id="noteRow" class="row" style="display: none;">
+		<div class="col-md-4 col-md-offset-4">
+			<textarea id="noteContent"></textarea>
+		</div>
+		<div class="col-md-4 col-md-offset-4">
+			<button id="addNote" type="button" class="btn btn-lg center-block">确定添加</button>
+		</div>
+	</div>
+	<div id="seeOtherRow" class="row">
+		<div class="col-md-4 col-md-offset-4">
+			<button id="seeOther" type="button" class="btn btn-lg center-block">查看所有用户的笔记</button>
+		</div>
+	</div>
+	<div id="notesRow" class="row">
+		<div id="notes" clas="col-md-6 col-md-offset-3">
+			
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block script %}
+	<script type="text/javascript">
+		var words=null;
+		var curWord=null;
+		$.get('/today_word',function(data){
+			if(data['result']=="success"){
+				words=data['words'];
+				init();
+			}else{
+				alert(data['message']);
+			}
+		});
+		function init(){
+			$("#showExplanation").click(function() {
+				$("#showExplanationRow").hide();
+				$("#explanationRow").show();
+			});
+			$("#remember").click(recite);
+			$("#forget").click(recite);
+			nextWord();
+		}
+		function nextWord(remember){
+			if(words.length==0){
+				$("#outter").replaceWith("<h1 class='center-block'>恭喜您今天的日背诵量已经完成！</h1>");
+				return;
+			}
+			if(!remember){
+				words.push(curWord);
+			}
+			curWord=words.shift();
+
+			//resetWord
+			$("#showExplanationRow").show();
+			$("#explanationRow").hide();
+			$("#word").text(curWord['word']);
+			$("#explanation").text(curWord['explanation']+"<br/>"+curWord['example']);
+		}
+		function recite(event){
+			var wordId=curWord['id'];
+			var remember=false;
+			switch(event.target.id){
+			case "remember":
+				remember=true;
+				break;
+			case "forget":
+				remember=false;
+				break;
+			default:
+				remember=false;
+			}
+			$.post('/recite',{wordId:wordId,remember:remember},function(data){
+				if(data['result']=="success"){
+					nextWord(remember);
+				}else{
+					alert(data['message']);
+				}
+			})
+		}
+
+		//查看其它用户的笔记
+		function getNotes(){
+			$("#notes").empty();
+			$.get("/get_notes",{wordId:curWord['id']},function(data){
+				if(data['result']=="success"){
+					for(var i=0;i<data['notes'].length;i++){
+						$("#notes").append("<p>"+data['notes'][i]+"</p>");
+					}
+				}else{
+					alert(data['message']);
+				}
+			});
+		}
+		$("#seeOther").click(function(){
+			$("#seeOther").replaceWith("<h3>用户笔记</h3>");
+			getNotes();
+		});
+
+		//添加笔记
+		$("#showAddNote").click(function(){
+			$("#noteRow").show();
+		});
+		$("#addNote").click(function(){
+			var note=$("#noteContent").val();
+			if(note==null||note==""){
+				alert("添加的笔记为空！");
+				return;
+			}
+			$.post('/add_note',{wordId:curWord['id'],note:note},function(data){
+				if(data['result']=="success"){
+					$("#seeOther").click();
+				}else{
+					alert(data['message']);
+				}
+			})
+		});
+	</script>
+{% endblock %}
