@@ -19,6 +19,14 @@ def success(dic):
     dic['result']='success'
     return jsonify(dic)
 
+#错误码
+@main.errorhandler(401)
+def page_unauthenticated(error):
+    return render_template('401.html'),401
+@main.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'),401
+
 @main.route('/',methods=['GET'])
 def index():
     return render_template('index.html')
