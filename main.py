@@ -92,6 +92,9 @@ def jidanci():
 @main.route('/today_word',methods=['GET'])
 @login_required
 def todayWord():
+    if current_user.task is None:
+        current_user.task=Task(user=current_user,wordNumPerDay=0)
+        session.commit()
     if session.query(HistoryTask).filter(HistoryTask.user==current_user,HistoryTask.taskTime==date.today()).count()==0:
         history=HistoryTask(userId=current_user.id,taskTime=date.today(),plan=current_user.task.wordNumPerDay,complete=0)
         session.add(history)
@@ -99,7 +102,7 @@ def todayWord():
     else:
         history=session.query(HistoryTask).filter(HistoryTask.user==current_user,HistoryTask.taskTime==date.today()).first()
     need=history.plan-history.complete
-    if need<0:
+    if need<=0:
         return success({'words':[]})
     count=session.query(Word).filter(Word.progresses.any(and_(Progress.progress<5,Progress.userId==current_user.id))).count()
     try:
