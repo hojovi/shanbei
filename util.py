@@ -45,5 +45,6 @@ def extendProgress(user,len):
     # effected_row=cursor.execute(sql)
     # connection.commit()
     # cursor.close()
-    unknown_return=engine.execute(text(sql).execution_options(autocommit=True))
+    unknown_return=session.connection().execute(sql)
+    session.commit()
     return unknown_return

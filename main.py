@@ -102,22 +102,24 @@ def todayWord():
     else:
         history=session.query(HistoryTask).filter(HistoryTask.user==current_user,HistoryTask.taskTime==date.today()).first()
     need=history.plan-history.complete
-    if need<=0:
-        return success({'words':[]})
+    # print(need)
     count=session.query(Word).filter(Word.progresses.any(and_(Progress.progress<5,Progress.userId==current_user.id))).count()
+    # print(count)
     try:
         if count<need:
             extendProgressCount=extendProgress(current_user, 1000)
         if count==0 and extendProgressCount.rowcount==0:
             return error({'message':'您已背完所有单词！'})
-        progresses=session.query(Progress).filter(Progress.user==current_user,Progress.progress<5).order_by(Progress.progress).limit(need).all()
-        print(progresses)
+        if need<=0:
+            return success({'words':[]})
+        progresses=session.query(Progress).filter(Progress.userId==current_user.id,Progress.progress<5).order_by(Progress.progress).limit(need).all()
+        # print(progresses)
         words=[progress.word.asDict() for progress in progresses]
         return success({'words':words})
     except Exception as e:
-        print(e)
-        import traceback
-        traceback.print_exc()
+        # print(e)
+        # import traceback
+        # traceback.print_exc()
         session.rollback()
         return error({'message':"抱歉出现错误，请发送详细内容到hantaouser@163.com"})
 
@@ -148,7 +150,7 @@ def recite():
         session.commit()
         return success({})
     except Exception as e:
-        print(e)
+        # print(e)
         session.rollback()
         return error({'message':"抱歉出现错误，请发送详细内容到hantaouser@163.com"})
 
@@ -200,7 +202,7 @@ def updateTask():
             current_user.task=Task(wordNumPerDay=num)
         else:
             current_user.task.wordNumPerDay=num
-        for history in session.query(HistoryTask).filter(HistoryTask.taskTime>=date.today()).all():
+        for history in session.query(HistoryTask).filter(HistoryTask.user==current_user,HistoryTask.taskTime>=date.today()).all():
             history.plan=num
         session.commit()
         return success({})
