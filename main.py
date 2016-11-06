@@ -90,6 +90,8 @@ def todayWord():
     else:
         history=HistoryTask.query_one(taskTime=date.today())
     need=history.plan-history.complete
+    if need<0:
+        return success({'words':[]})
     count=session.query(Word).filter(Word.progresses.any(and_(Progress.progress<5,Progress.userId==current_user.id))).count()
     try:
         if count<need:
