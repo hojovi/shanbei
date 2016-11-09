@@ -53,16 +53,23 @@ def logout():
 
 @main.route('/register',methods=['POST'])
 def register():
-    if current_user is None:
-        return error({'message':'当前有用户登录！'})
-    name=request.form['name']
-    password=request.form['password']
-    if name is None or password is None:
-        return error(message='错误！'), 404
-    user=User(name=name,password=password)
-    User.insert(user)
-    login_user(user)
-    return success({'message':'注册成功！'})
+    try:
+        if current_user is None:
+            return error({'message':'当前有用户登录！'})
+        name=request.form['name']
+        password=request.form['password']
+        if name is None or password is None:
+            return error(message='错误！'), 404
+        user=User(name=name,password=password)
+        User.insert(user)
+        login_user(user)
+        return success({'message':'注册成功！'})
+    except Exception as e:
+        print(e)
+        import traceback
+        traceback.print_exc()
+        session.rollback()
+        return error({'message':"注册失败，请重试！"})
 
 @main.route('/jidanci',methods=['GET','POST'])
 @login_required
