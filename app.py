@@ -12,6 +12,7 @@ app.secret_key=b'\x1c\xe9\xd6P\x90\x87\x8f\x82Q\xc3$\xa6\xac\xd4A\xb7\xf6\xa8<S\
 #login
 login_manager=LoginManager()
 login_manager.setup_app(app)
+login_manager.session_protection='strong'
 
 @login_manager.user_loader
 def load_user(id):
