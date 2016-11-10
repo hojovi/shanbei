@@ -5,6 +5,8 @@ from main import main
 
 from db import User
 
+from datetime import timedelta
+
 #flask app
 app=Flask(__name__)
 app.secret_key=b'\x1c\xe9\xd6P\x90\x87\x8f\x82Q\xc3$\xa6\xac\xd4A\xb7\xf6\xa8<S\xcb\xc7\xcc\xb1'
@@ -13,6 +15,9 @@ app.secret_key=b'\x1c\xe9\xd6P\x90\x87\x8f\x82Q\xc3$\xa6\xac\xd4A\xb7\xf6\xa8<S\
 login_manager=LoginManager()
 login_manager.setup_app(app)
 login_manager.session_protection='strong'
+
+#cookie设置
+app['REMEMBER_COOKIE_DURATION']=timedelta(days=90)
 
 @login_manager.user_loader
 def load_user(id):

@@ -35,10 +35,11 @@ def index():
 def login():
     name = request.form.get("name")
     password = request.form.get("password")
+    rememberMe=request.form.get("rememberMe",False)
     try:
         user = session.query(User).filter(User.name==name).one()
         if user.password==password:
-            login_user(user)
+            login_user(user,remember=rememberMe)
             return success({})
         else:
             return error({'message':'用户名或密码错误！'})
