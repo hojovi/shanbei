@@ -17,7 +17,7 @@ login_manager.setup_app(app)
 login_manager.session_protection='strong'
 
 #cookie设置
-app['REMEMBER_COOKIE_DURATION']=timedelta(days=90)
+app.REMEMBER_COOKIE_DURATION=timedelta(days=90)
 
 @login_manager.user_loader
 def load_user(id):
