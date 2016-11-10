@@ -37,7 +37,7 @@ def login():
     password = request.form.get("password")
     rememberMe=request.form.get("rememberMe",False)
     try:
-        user = session.query(User).filter(User.name==name).one()
+        user = session.query(User).filter(User.name==name).first()
         if user.password==password:
             login_user(user,remember=rememberMe)
             return success({})
