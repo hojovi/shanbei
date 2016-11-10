@@ -16,7 +16,7 @@ db_config={
 
 engine=create_engine('mysql+pymysql://%(user)s:%(password)s@%(host)s/%(database)s?charset=%(charset)s'%db_config,pool_recycle=10)
 
-DBSession=sessionmaker(bind=engine)
+DBSession=sessionmaker(bind=engine,autoflush=True)
 Base=declarative_base()
 session=DBSession()
 
