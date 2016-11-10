@@ -65,7 +65,9 @@ def register():
         name=request.form['name']
         password=request.form['password']
         if name is None or password is None:
-            return error(message='错误！'), 404
+            return error({'message':'错误！'}), 404
+        if session.query(User).filter(User.name==name).count()!=0:
+            return error({'message':'用户名已存在！'})
         user=User(name=name,password=password)
         User.insert(user)
         login_user(user)
