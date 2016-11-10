@@ -49,7 +49,7 @@ def login():
         import traceback
         traceback.print_exc()
         session.rollback()
-        return error("message":"登录失败，请重试！")
+        return error({"message":"登录失败，请重试！"})
 
 @main.route('/logout',methods=['POST','GET'])
 @login_required
@@ -121,8 +121,8 @@ def todayWord():
     try:
         if count<need:
             extendProgressCount=extendProgress(current_user, 1000)
-        if count==0 and extendProgressCount.rowcount==0:
-            return error({'message':'您已背完所有单词！'})
+            if count==0 and extendProgressCount.rowcount==0:
+                return error({'message':'您已背完所有单词！'})
         if need<=0:
             return success({'words':[]})
         progresses=session.query(Progress).filter(Progress.userId==current_user.id,Progress.progress<5).order_by(Progress.progress).limit(need).all()
@@ -130,9 +130,9 @@ def todayWord():
         words=[progress.word.asDict() for progress in progresses]
         return success({'words':words})
     except Exception as e:
-        # print(e)
-        # import traceback
-        # traceback.print_exc()
+        print(e)
+        import traceback
+        traceback.print_exc()
         session.rollback()
         return error({'message':"抱歉出现错误，请发送详细内容到hantaouser@163.com"})
 

@@ -95,6 +95,10 @@
 			$("#explanationRow").hide();
 			$("#word").text(curWord['word']);
 			$("#explanation").html("<p>"+curWord['explanation']+"<br/>"+(curWord['example']==null?'':curWord['example'])+"</p>");
+			$("#noteRow").hide();
+			$("#seeOtherRow").show();
+			$("#notes").empty();
+			$("#notesRow").hide();
 		}
 		function recite(event){
 			var wordId=curWord['id'];
