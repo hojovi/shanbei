@@ -44,6 +44,12 @@ def login():
             return error({'message':'用户名或密码错误！'})
     except NoResultFound:
         return error({"message": "用户名不存在！"})
+    except Exception as e:
+        print(e)
+        import traceback
+        traceback.print_exc()
+        session.rollback()
+        return error("message":"登录失败，请重试！")
 
 @main.route('/logout',methods=['POST','GET'])
 @login_required
