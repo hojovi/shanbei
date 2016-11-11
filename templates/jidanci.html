@@ -87,7 +87,7 @@
 		}
 		function nextWord(remember){
 			if(words.length==0){
-				$("#outter").replaceWith("<h1 class='center-block'>恭喜您今天的日背诵量已经完成！</h1>");
+				$("#outter").html("<div class='row top-buffer'><div class='col-md-4 col-md-offset-4 text-center'><h1>恭喜您今天的日背诵量已经完成！</h1></div></div>");
 				return;
 			}
 			if(!remember){
