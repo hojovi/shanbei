@@ -1,10 +1,10 @@
-create database if not exists shanbei default charset utf8 default collate utf8_general_ci;
+﻿create database if not exists shanbei default charset utf8 default collate utf8_general_ci;
 use shanbei;
 
 #单词表
 create table if not exists word(
 	id int primary key auto_increment,
-	word varchar(100) not null comment "单词",
+	word varchar(100) unique key not null comment "单词",
 	explanation text comment "解释",
 	example text comment "例句"
 )engine=innodb;
@@ -12,14 +12,15 @@ create table if not exists word(
 #标签表
 create table if not exists tag(
 	id int primary key auto_increment,
-	tag varchar(50) comment "标签"
+	tag varchar(50) unique key comment "标签"
 )engine=innodb;
 
 #用户表
 create table if not exists user(
 	id int primary key auto_increment,
-	name varchar(50) not null comment "用户名",
-	password varchar(64) not null comment "密码"
+	name varchar(50) unique key not null comment "用户名",
+	password varchar(64) not null comment "密码",
+	unique index name_password_index(name,password)
 )engine=innodb;
 
 #计划表
