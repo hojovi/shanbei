@@ -37,6 +37,7 @@ class Addon:
                 aa.append(getattr(cls,key)==value)
             return session.query(cls).filter(*aa).one()
         except:
+            session.rollback()
             return None
 
     @classmethod
