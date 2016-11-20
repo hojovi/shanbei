@@ -13,6 +13,10 @@ for item in doc['wordbook']['item']:
        Tag.insert(tag)
    else:
        tag=Tag.query_one(tag=item['tags'])
-   word=Word(word=item['word'],explanation=item['trans'])
+   wordNum=Word.query_count(word=item['word'])
+   if wordNum==0:
+       word=Word(word=item['word'],explanation=item['trans'])
+   else:
+       continue
    word.tags.append(tag)
    Word.insert(word)
