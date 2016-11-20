@@ -192,7 +192,13 @@
     	$("#login").click(login);
     	$(document).keydown(function(event){
     		if(event.keyCode==13){
-    			login();
+                if(($("#loginModal").data("bs.modal")||{}).isShown){
+                    login();
+                }
+                if(($("#registerModal").data("bs.modal")||{}).isShown){
+                    register();
+                }
+    			
     		}
     	});
     	$("#logout").click(function(){
